@@ -63,7 +63,7 @@ type Engine struct {
 }
 
 // NewEngine creates an instance of the discovery Engine
-func NewEngine(name string, provider discovery.Provider, daemon *groupcache.Daemon, host *Peer, opts ...Option) *Engine {
+func NewEngine(provider discovery.Provider, daemon *groupcache.Daemon, host *Peer, opts ...Option) *Engine {
 	// create an instance of Group
 	engine := &Engine{
 		provider:              provider,
@@ -140,10 +140,6 @@ func (g *Engine) Stop(ctx context.Context) error {
 	if !g.started.Load() {
 		return nil
 	}
-
-	// create a cancellation context
-	ctx, cancelFn := context.WithTimeout(ctx, g.shutdownTimeout)
-	defer cancelFn()
 
 	// stop the events loop
 	close(g.stopEventsListenerSig)
