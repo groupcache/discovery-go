@@ -15,7 +15,7 @@ import (
 	"github.com/groupcache/discovery-go/discovery/dnssd"
 )
 
-func main() {
+func ExampleDNSSD() {
 	const domainName = "accounts"
 
 	// create an instance of
@@ -49,7 +49,9 @@ func main() {
 		log.Fatal("while starting server on 192.168.1.1:8080")
 	}
 
+	// create an instance of the discovery engine on the node
 	discoveryEngine := discoverygo.NewEngine(provider, daemon, hostNode)
+	// start the discovery engine
 	if err := discoveryEngine.Start(ctx); err != nil {
 		log.Fatal(err)
 	}
