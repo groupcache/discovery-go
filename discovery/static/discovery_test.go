@@ -21,7 +21,8 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/tochemey/gokv/discovery"
+
+	"github.com/groupcache/discovery-go/discovery"
 )
 
 func TestDiscovery(t *testing.T) {

@@ -22,8 +22,9 @@ import (
 	"sync"
 
 	goset "github.com/deckarep/golang-set/v2"
-	"github.com/tochemey/gokv/discovery"
 	"go.uber.org/atomic"
+
+	"github.com/groupcache/discovery-go/discovery"
 )
 
 const (

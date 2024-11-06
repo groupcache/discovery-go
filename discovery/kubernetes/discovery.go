@@ -24,7 +24,6 @@ import (
 	"sync"
 
 	goset "github.com/deckarep/golang-set/v2"
-	"github.com/tochemey/gokv/discovery"
 	"go.uber.org/atomic"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -32,6 +31,8 @@ import (
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 	"k8s.io/utils/strings/slices"
+
+	"github.com/groupcache/discovery-go/discovery"
 )
 
 // Discovery represents the kubernetes discovery

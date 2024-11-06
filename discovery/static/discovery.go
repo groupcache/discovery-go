@@ -16,7 +16,7 @@
 
 package static
 
-import "github.com/tochemey/gokv/discovery"
+import "github.com/groupcache/discovery-go/discovery"
 
 // Discovery represents the static discovery provider
 type Discovery struct {

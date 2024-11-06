@@ -10,7 +10,6 @@ require (
 	github.com/nats-io/nats-server/v2 v2.10.22
 	github.com/nats-io/nats.go v1.37.0
 	github.com/stretchr/testify v1.9.0
-	github.com/tochemey/gokv v0.1.0
 	github.com/travisjeffery/go-dynaport v1.0.0
 	go.uber.org/atomic v1.11.0
 	go.uber.org/multierr v1.11.0
