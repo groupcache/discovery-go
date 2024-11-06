@@ -59,14 +59,14 @@ type Engine struct {
 
 	logger logger.Logger
 
-	daemon *groupcache.Daemon
+	deamon *groupcache.Daemon
 }
 
 // NewEngine creates an instance of the discovery Engine
-func NewEngine(name string, disco discovery.Provider, host *Peer) *Engine {
+func NewEngine(name string, provider discovery.Provider, daemon *groupcache.Daemon, host *Peer, opts ...Option) *Engine {
 	// create an instance of Group
 	engine := &Engine{
-		provider:              disco,
+		provider:              provider,
 		shutdownTimeout:       3 * time.Second,
 		minimumPeersQuorum:    1,
 		maxJoinTimeout:        time.Second,
@@ -76,17 +76,18 @@ func NewEngine(name string, disco discovery.Provider, host *Peer) *Engine {
 		eventsLock:            new(sync.Mutex),
 		stopEventsListenerSig: make(chan struct{}, 1),
 		hostNode:              host,
+		deamon:                daemon,
 	}
 	// apply the various options
-	//for _, opt := range opts {
-	//	opt.Apply(group)
-	//}
+	for _, opt := range opts {
+		opt.Apply(engine)
+	}
 
 	return engine
 }
 
 // Start starts the Engine.
-func (g *Engine) Start(ctx context.Context, options *groupcache.Options) (err error) {
+func (g *Engine) Start(ctx context.Context) (err error) {
 	// extract the host and port of the host
 	host, _, err := getHostPort(g.hostNode.Address)
 	if err != nil {
@@ -127,12 +128,6 @@ func (g *Engine) Start(ctx context.Context, options *groupcache.Options) (err er
 		Ch: eventsCh,
 	}
 
-	// start the group cache engine
-	g.daemon, err = groupcache.ListenAndServe(ctx, g.hostNode.Address, *options)
-	if err != nil {
-		return err
-	}
-
 	g.started.Store(true)
 	// start listening to events
 	go g.eventsListener(eventsCh)
@@ -159,7 +154,6 @@ func (g *Engine) Stop(ctx context.Context) error {
 		AddError(g.provider.Deregister()).
 		AddError(g.provider.Close()).
 		AddError(g.mlist.Shutdown()).
-		AddError(g.daemon.Shutdown(ctx)).
 		Error(); err != nil {
 		return err
 	}
@@ -229,7 +223,8 @@ func (g *Engine) eventsListener(eventsChan chan memberlist.NodeEvent) {
 					Address: peerInfo.Address,
 					IsSelf:  peerInfo.IsSelf,
 				})
-				_ = g.daemon.SetPeers(ctx, peersSet.ToSlice())
+
+				_ = g.deamon.SetPeers(ctx, peersSet.ToSlice())
 				g.eventsLock.Unlock()
 
 			case memberlist.NodeLeave:
@@ -240,7 +235,7 @@ func (g *Engine) eventsListener(eventsChan chan memberlist.NodeEvent) {
 					Address: peerInfo.Address,
 					IsSelf:  peerInfo.IsSelf,
 				})
-				_ = g.daemon.SetPeers(ctx, peersSet.ToSlice())
+				_ = g.deamon.SetPeers(ctx, peersSet.ToSlice())
 				g.eventsLock.Unlock()
 
 			case memberlist.NodeUpdate:
